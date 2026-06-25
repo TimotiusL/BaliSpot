@@ -11,6 +11,10 @@ Route::get('/admin', function () {
     return view('layouts.admin');
 });
 
+Route::get('/user', function () {
+    return view('layouts.user');
+});
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
