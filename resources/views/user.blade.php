@@ -1,46 +1,64 @@
 <!DOCTYPE html>
 <html lang="en">
+<script>
+
+    const session = JSON.parse(localStorage.getItem("balispot_session"));
+
+    if (!session || session.role != "user") {
+
+        window.location = "/";
+
+    }
+
+</script>
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BaliTour - Pemandu Wisata Pintar</title>
+    <title>BaliSpot - Smart Tourism Companion</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body class="bg-slate-50 font-sans text-gray-800 max-w-md mx-auto min-h-screen flex flex-col shadow-2xl relative bg-white">
+
+<body
+    class="bg-slate-50 font-sans text-gray-800 max-w-md mx-auto min-h-screen flex flex-col shadow-2xl relative bg-white">
 
     <header class="bg-indigo-600 text-white p-5 rounded-b-3xl shadow-md sticky top-0 z-50">
         <div class="flex justify-between items-center mb-3">
             <h1 class="text-xl font-bold tracking-wide flex items-center">
-                <i class="fa-solid fa-map-location-dot mr-2 text-emerald-400"></i>BaliTour Companion
+                <i class="fa-solid fa-map-location-dot mr-2 text-emerald-400"></i>BaliSpot
             </h1>
-            <button onclick="getGPSLocation()" class="bg-indigo-500 hover:bg-indigo-700 p-2 rounded-full transition text-xs flex items-center space-x-1">
+            <button onclick="getGPSLocation()"
+                class="bg-indigo-500 hover:bg-indigo-700 p-2 rounded-full transition text-xs flex items-center space-x-1">
                 <i class="fa-solid fa-location-crosshairs animate-pulse text-emerald-400"></i>
                 <span class="font-mono text-[10px]">Sync GPS</span>
             </button>
         </div>
-        
+
         <div class="bg-indigo-700/50 p-3 rounded-xl text-xs flex items-center space-x-3 border border-indigo-500/30">
             <i class="fa-solid fa-street-view text-lg text-emerald-300"></i>
             <div>
-                <p class="text-indigo-200 font-medium">Koordinat GPS Anda:</p>
+                <p class="text-indigo-200 font-medium">Lokasi Anda Saat Ini</p>
                 <p id="gps-status" class="font-mono text-white">Mendeteksi lokasi... (Pastikan GPS Aktif)</p>
             </div>
         </div>
     </header>
 
     <main class="p-4 flex-1 space-y-5 pb-24">
-        
+
         <div class="space-y-2">
             <label class="text-xs font-bold text-gray-400 uppercase tracking-wider">Filter Budget Wisata</label>
             <div class="grid grid-cols-3 gap-2">
-                <button onclick="setBudgetFilter('Murah')" id="btn-b-Murah" class="filter-budget-btn border border-gray-200 bg-white py-2 rounded-xl text-sm font-semibold text-gray-600 shadow-sm transition">
+                <button onclick="setBudgetFilter('Murah')" id="btn-b-Murah"
+                    class="filter-budget-btn border border-gray-200 bg-white py-2 rounded-xl text-sm font-semibold text-gray-600 shadow-sm transition">
                     $ Murah
                 </button>
-                <button onclick="setBudgetFilter('Cukup')" id="btn-b-Cukup" class="filter-budget-btn border border-gray-200 bg-white py-2 rounded-xl text-sm font-semibold text-gray-600 shadow-sm transition">
+                <button onclick="setBudgetFilter('Cukup')" id="btn-b-Cukup"
+                    class="filter-budget-btn border border-gray-200 bg-white py-2 rounded-xl text-sm font-semibold text-gray-600 shadow-sm transition">
                     $$ Cukup
                 </button>
-                <button onclick="setBudgetFilter('Mahal')" id="btn-b-Mahal" class="filter-budget-btn border border-gray-200 bg-white py-2 rounded-xl text-sm font-semibold text-gray-600 shadow-sm transition">
+                <button onclick="setBudgetFilter('Mahal')" id="btn-b-Mahal"
+                    class="filter-budget-btn border border-gray-200 bg-white py-2 rounded-xl text-sm font-semibold text-gray-600 shadow-sm transition">
                     $$$ Mahal
                 </button>
             </div>
@@ -49,7 +67,7 @@
         <div class="space-y-3">
             <div class="flex justify-between items-center">
                 <h3 id="list-title" class="text-md font-bold text-gray-800 flex items-center">
-                    <i class="fa-solid fa-wand-magic-sparkles text-indigo-500 mr-2"></i>Destinasi Terdekat Anda
+                    <i class="fa-solid fa-wand-magic-sparkles text-indigo-500 mr-2"></i>Rekomendasi Untuk Anda
                 </h3>
                 <span class="text-xs text-gray-400 font-medium" id="total-found">0 ditemukan</span>
             </div>
@@ -57,30 +75,48 @@
             <div id="places-container" class="space-y-3">
                 <div class="p-6 text-center text-gray-400 font-medium text-sm">
                     <i class="fa-solid fa-circle-notch animate-spin text-2xl text-indigo-600 mb-2"></i>
-                    <p>Menghitung koordinat terdekat dari posisi Anda...</p>
+                    <p>Mencari destinasi terbaik di sekitar Anda...</p>
                 </div>
             </div>
         </div>
     </main>
 
-    <nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white border-t border-gray-100 grid grid-cols-4 py-2.5 px-2 shadow-[0_-4px_10px_rgba(0,0,0,0.05)] z-50">
-        <button onclick="switchCategory('Wisata')" id="nav-Wisata" class="nav-item flex flex-col items-center space-y-1 text-indigo-600">
-            <i class="fa-solid fa-compass text-lg"></i><span class="text-[10px] font-bold">Wisata</span>
+    <nav
+        class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white border-t border-gray-100 grid grid-cols-4 py-2.5 px-2 shadow-[0_-4px_10px_rgba(0,0,0,0.05)] z-50">
+        <button onclick="switchCategory('Wisata')" id="nav-Wisata"
+            class="nav-item flex flex-col items-center space-y-1 text-indigo-600">
+            <i class="fa-solid fa-umbrella-beach"></i><span class="text-[10px] font-bold">Wisata</span>
         </button>
-        <button onclick="switchCategory('Kuliner')" id="nav-Kuliner" class="nav-item flex flex-col items-center space-y-1 text-gray-400 hover:text-indigo-600">
-            <i class="fa-solid fa-bowl-food text-lg"></i><span class="text-[10px] font-medium">Kuliner</span>
+        <button onclick="switchCategory('Kuliner')" id="nav-Kuliner"
+            class="nav-item flex flex-col items-center space-y-1 text-gray-400 hover:text-indigo-600">
+            <i class="fa-solid fa-utensils"></i><span class="text-[10px] font-medium">Kuliner</span>
         </button>
-        <button onclick="switchCategory('Hotel')" id="nav-Hotel" class="nav-item flex flex-col items-center space-y-1 text-gray-400 hover:text-indigo-600">
-            <i class="fa-solid fa-bed text-lg"></i><span class="text-[10px] font-medium">Akomodasi</span>
+        <button onclick="switchCategory('Hotel')" id="nav-Hotel"
+            class="nav-item flex flex-col items-center space-y-1 text-gray-400 hover:text-indigo-600">
+            <i class="fa-solid fa-hotel"></i><span class="text-[10px] font-medium">Akomodasi</span>
         </button>
-        <button onclick="switchCategory('Ibadah')" id="nav-Ibadah" class="nav-item flex flex-col items-center space-y-1 text-gray-400 hover:text-indigo-600">
-            <i class="fa-solid fa-place-of-worship text-lg"></i><span class="text-[10px] font-medium">Ibadah</span>
+        <button onclick="switchCategory('Ibadah')" id="nav-Ibadah"
+            class="nav-item flex flex-col items-center space-y-1 text-gray-400 hover:text-indigo-600">
+            <i class="fa-solid fa-place-of-worship"></i></i><span class="text-[10px] font-medium">Ibadah</span>
         </button>
     </nav>
+    <button onclick="logout()">
+        Logout
+    </button>
+    <script>
 
+        function logout() {
+
+            localStorage.removeItem("balispot_session");
+
+            window.location = "/";
+
+        }
+
+    </script>
     <script>
         // DATA MASTER DESTINASI BALI (Sama dengan isi database dashboard)
-        const destinationsDatabase = [
+        const baliSpotData = [
             { id: 1, name: "Pura Uluwatu", category: "Wisata", lat: -8.8291, lng: 115.0849, price: "Murah", desc: "Pertunjukan Tari Kecak di atas tebing laut." },
             { id: 2, name: "Beach Club Atlas Canggu", category: "Wisata", lat: -8.6592, lng: 115.1301, price: "Mahal", desc: "Beach club terbesar di dunia dengan kolam mewah." },
             { id: 3, name: "Warung Nasi Ayam Ibu Mangku", category: "Kuliner", lat: -8.4921, lng: 115.2512, price: "Murah", desc: "Kuliner ayam suwir khas Ubud legendaris." },
@@ -97,7 +133,7 @@
         let activeCategory = 'Wisata';
         let activeBudgetFilter = null;
 
-        window.onload = function() {
+        window.onload = function () {
             getGPSLocation(); // Langsung minta GPS saat aplikasi dibuka
         };
 
@@ -108,15 +144,15 @@
                     (position) => {
                         userLatitude = position.coords.latitude;
                         userLongitude = position.coords.longitude;
-                        
-                        document.getElementById('gps-status').innerHTML = 
+
+                        document.getElementById('gps-status').innerHTML =
                             `<span class="text-emerald-400 font-bold">Terdeteksi Akurat:</span> ${userLatitude.toFixed(4)}, ${userLongitude.toFixed(4)}`;
-                        
+
                         processAndDisplayDestinations();
                     },
                     (error) => {
                         console.warn("GPS ditolak/gagal. Menggunakan mode simulasi lokasi (Kuta Bali).");
-                        document.getElementById('gps-status').innerHTML = 
+                        document.getElementById('gps-status').innerHTML =
                             `<span class="text-yellow-400 font-bold">Simulasi Lokasi (Kuta):</span> ${userLatitude}, ${userLongitude}`;
                         processAndDisplayDestinations();
                     }
@@ -131,10 +167,10 @@
             const R = 6371; // Jari-jari bumi dalam Kilometer
             const dLat = (lat2 - lat1) * Math.PI / 180;
             const dLon = (lon2 - lon1) * Math.PI / 180;
-            const a = 
-                Math.sin(dLat/2) * Math.sin(dLat/2) +
-                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon/2) * Math.sin(dLon/2);
-            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            const a =
+                Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
             return R * c; // Hasil akhir Jarak Jauh (KM)
         }
 
@@ -144,7 +180,7 @@
             container.innerHTML = ""; // Bersihkan list lamanya
 
             // Olah data: Hitung jarak dari posisi GPS user ke seluruh tempat
-            let processedList = destinationsDatabase.map(place => {
+            let processedList = baliSpotData.map(place => {
                 let distance = calculateHaversineDistance(userLatitude, userLongitude, place.lat, place.lng);
                 return { ...place, distance: distance };
             });
@@ -160,7 +196,7 @@
 
             document.getElementById('total-found').innerText = `${processedList.length} ditemukan`;
 
-            if(processedList.length === 0) {
+            if (processedList.length === 0) {
                 container.innerHTML = `
                     <div class="p-8 text-center text-gray-400 bg-white border rounded-2xl">
                         <i class="fa-solid fa-folder-open text-3xl mb-2 text-gray-300"></i>
@@ -197,7 +233,7 @@
         // INTERAKSI: Ganti Kategori Menu Bawah
         function switchCategory(category) {
             activeCategory = category;
-            
+
             // Atur gaya desain tombol nav aktif
             document.querySelectorAll('.nav-item').forEach(btn => {
                 btn.className = "nav-item flex flex-col items-center space-y-1 text-gray-400 hover:text-indigo-600";
@@ -230,4 +266,5 @@
         }
     </script>
 </body>
+
 </html>

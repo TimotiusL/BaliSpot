@@ -1,5 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
+<script>
+
+    const session = JSON.parse(localStorage.getItem("balispot_session"));
+
+    if (!session || session.role != "admin") {
+
+        window.location = "/";
+
+    }
+
+</script>
 
 <head>
     <meta charset="UTF-8">
@@ -221,7 +232,20 @@
                         </div>
                     </div>
                 </div>
+                <button onclick="logout()">
+                    Logout
+                </button>
+                <script>
 
+                    function logout() {
+
+                        localStorage.removeItem("balispot_session");
+
+                        window.location = "/";
+
+                    }
+
+                </script>
             </main>
         </div>
     </div>
