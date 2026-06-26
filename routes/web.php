@@ -1,19 +1,12 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\UserController;
 
-Route::get('/', function () {
-    return view('login');
-});
+Route::get('/', [AuthController::class, 'login']);
+Route::get('/register', [AuthController::class, 'register']);
 
-Route::get('/register', function () {
-    return view('register');
-});
-
-Route::get('/admin', function () {
-    return view('admin');
-});
-
-Route::get('/home', function () {
-    return view('user');
-});
+Route::get('/admin', [AdminController::class, 'index']);
+Route::get('/home', [UserController::class, 'index']);

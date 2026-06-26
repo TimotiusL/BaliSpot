@@ -125,53 +125,11 @@
 
                     </button>
 
+                    <p id="registerMessage"
+                        class="hidden mt-3 rounded-lg p-3 text-sm text-center">
+                    </p>
+
                 </form>
-
-                <script>
-
-                    document.getElementById("registerForm").addEventListener("submit", function (e) {
-
-                        e.preventDefault();
-
-                        let users = JSON.parse(localStorage.getItem("balispot_users")) || [];
-
-                        const password = document.getElementById("password").value;
-                        const confirmPassword = document.getElementById("confirmPassword").value;
-
-                        if (password !== confirmPassword) {
-                            alert("Password dan Confirm Password tidak sama!");
-                            return;
-                        }
-
-                        const username = document.getElementById("username").value;
-
-                        const exist = users.find(user => user.username === username);
-
-                        if (exist) {
-                            alert("Username sudah digunakan!");
-                            return;
-                        }
-
-                        const data = {
-
-                            name: document.getElementById("name").value,
-                            email: document.getElementById("email").value,
-                            username: username,
-                            password: password
-
-                        };
-
-                        users.push(data);
-
-                        localStorage.setItem("balispot_users", JSON.stringify(users));
-
-                        alert("Register berhasil!");
-
-                        window.location.href = "/";
-
-                    });
-
-                </script>
 
                 <div class="text-center mt-6">
 
@@ -181,7 +139,7 @@
 
                     </span>
 
-                    <a href="/login" class="text-emerald-300 font-semibold">
+                    <a href="/" class="text-emerald-300 font-semibold">
 
                         Login
 

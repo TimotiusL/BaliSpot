@@ -35,6 +35,8 @@
             </button>
         </div>
 
+        
+
         <div class="bg-indigo-700/50 p-3 rounded-xl text-xs flex items-center space-x-3 border border-indigo-500/30">
             <i class="fa-solid fa-street-view text-lg text-emerald-300"></i>
             <div>
@@ -42,9 +44,19 @@
                 <p id="gps-status" class="font-mono text-white">Mendeteksi lokasi... (Pastikan GPS Aktif)</p>
             </div>
         </div>
+
+        <div class="absolute top-5 right-5">
+            <button id="logoutBtn"
+                class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-semibold transition">
+                <i class="fa-solid fa-right-from-bracket mr-2"></i>
+                Logout
+            </button>
+        </div>
     </header>
 
     <main class="p-4 flex-1 space-y-5 pb-24">
+
+    
 
         <div class="space-y-2">
             <label class="text-xs font-bold text-gray-400 uppercase tracking-wider">Filter Budget Wisata</label>
@@ -100,20 +112,7 @@
             <i class="fa-solid fa-place-of-worship"></i></i><span class="text-[10px] font-medium">Ibadah</span>
         </button>
     </nav>
-    <button onclick="logout()">
-        Logout
-    </button>
-    <script>
 
-        function logout() {
-
-            localStorage.removeItem("balispot_session");
-
-            window.location = "/";
-
-        }
-
-    </script>
     <script>
         // DATA MASTER DESTINASI BALI (Sama dengan isi database dashboard)
         const baliSpotData = [
