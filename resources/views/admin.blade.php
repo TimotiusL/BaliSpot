@@ -5,8 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BaliSpot Admin</title>
-    @vite(['resources/css/app.css','resources/js/admin.js'])
+    @vite(['resources/css/app.css', 'resources/js/admin.js'])
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
     <style>
         .active-menu {
             @apply bg-indigo-800 text-white;
@@ -17,12 +19,20 @@
 <body class="bg-gray-100 font-sans">
 
     <div class="flex h-screen overflow-hidden">
-        <div class="w-64 bg-indigo-950 text-white flex flex-col justify-between hidden md:flex z-10 shadow-xl">
+
+        <div id="sidebarOverlay" class="fixed inset-0 bg-black/50 z-30 hidden md:hidden"></div>
+
+        <div id="sidebar"
+            class="w-64 bg-indigo-950 text-white flex flex-col justify-between fixed md:static inset-y-0 left-0 z-40 shadow-xl transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out">
             <div class="p-5">
-                <h1 class="text-2xl font-bold tracking-wider mb-8 flex items-center">
-                    <i class="fa-solid fa-map-location-dot mr-3 text-emerald-400"></i>BaliSpot <span
-                        class="text-xs bg-emerald-500 text-black px-1.5 py-0.5 rounded ml-2 font-mono">v1.0</span>
-                </h1>
+                <div class="flex items-center justify-between mb-8">
+                    <h1 class="text-2xl font-bold tracking-wider flex items-center">
+                        <i class="fa-solid fa-map-location-dot mr-3 text-emerald-400"></i>BaliSpot
+                    </h1>
+                    <button id="sidebarCloseBtn" class="md:hidden text-indigo-300 hover:text-white text-xl">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
                 <nav class="space-y-1" id="sidebar-nav">
                     <button onclick="switchMenu('dashboard')" id="btn-dashboard"
                         class="w-full flex items-center space-x-3 bg-indigo-800 p-3 rounded-lg font-medium transition text-left">
@@ -53,9 +63,6 @@
                         AD</div>
                     <div>
                         <p class="text-sm font-semibold">Admin BaliSpot</p>
-                        <p class="text-xs text-emerald-400 flex items-center"><span
-                                class="w-2 h-2 bg-emerald-400 rounded-full mr-1.5 animate-pulse"></span>Database
-                            Connected</p>
                     </div>
                 </div>
             </div>
@@ -64,15 +71,15 @@
         <div class="flex-1 flex flex-col overflow-y-auto">
             <header class="bg-white shadow-sm px-6 py-4 flex justify-between items-center sticky top-0 z-20">
                 <div class="flex items-center space-x-4">
-                    <button class="md:hidden text-gray-600"><i class="fa-solid fa-bars text-xl"></i></button>
+                    <button id="sidebarToggleBtn" class="md:hidden text-gray-600"><i
+                            class="fa-solid fa-bars text-xl"></i></button>
                     <h2 id="page-title" class="text-xl font-bold text-gray-800">Ringkasan Sistem & Data</h2>
                 </div>
-                <div class="flex items-center space-x-4">
-                    <div class="bg-gray-100 px-3 py-1.5 rounded-lg text-xs font-mono text-gray-600 shadow-sm">
-                        <i class="fa-solid fa-database text-emerald-500 mr-1.5"></i>Prototype Mode
-                    </div>
-                    <span class="text-sm text-gray-500 font-medium">Juni 2026</span>
-                </div>
+                <button id="logoutBtn" onclick="logout()"
+                    class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-semibold transition flex items-center text-sm">
+                    <i class="fa-solid fa-right-from-bracket mr-2"></i>
+                    <span class="hidden sm:inline">Logout</span>
+                </button>
             </header>
 
             <main class="p-6 space-y-6">
@@ -126,21 +133,60 @@
                     </div>
 
                     <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                        <h3 class="text-lg font-semibold text-gray-800 mb-2">Peta Kepadatan Destinasi Terdaftar</h3>
-                        <p class="text-sm text-gray-400 mb-4">Simulasi koordinat geografis cluster pariwisata Bali
-                            (Denpasar, Badung, Gianyar).</p>
-                        <div
-                            class="bg-slate-900 h-64 rounded-xl flex items-center justify-center text-gray-500 relative overflow-hidden border border-slate-800">
-                            <div
-                                class="absolute inset-0 bg-[radial-gradient(#334155_1px,transparent_1px)] [background-size:16px_16px] opacity-40">
-                            </div>
-                            <div class="text-center z-10">
-                                <i class="fa-solid fa-map-marked-alt text-4xl text-indigo-400 mb-2 animate-bounce"></i>
-                                <p class="text-sm text-gray-300 font-mono">GPS Map Node System Operational</p>
-                                <p class="text-xs text-gray-500 mt-1">Ready to link with Leaflet.js or Google Maps SDK
-                                </p>
+
+                        <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+                            <h3 class="text-lg font-semibold text-gray-800">
+                                Peta Kepadatan Destinasi Terdaftar
+                            </h3>
+
+                            <div class="flex items-center gap-3 text-xs text-gray-500">
+                                <span class="flex items-center gap-1">
+                                    <span class="w-2.5 h-2.5 rounded-full bg-blue-600"></span>
+                                    Wisata
+                                </span>
+
+                                <span class="flex items-center gap-1">
+                                    <span class="w-2.5 h-2.5 rounded-full bg-amber-600"></span>
+                                    Kuliner
+                                </span>
+
+                                <span class="flex items-center gap-1">
+                                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-600"></span>
+                                    Hotel
+                                </span>
+
+                                <span class="flex items-center gap-1">
+                                    <span class="w-2.5 h-2.5 rounded-full bg-purple-600"></span>
+                                    Ibadah
+                                </span>
                             </div>
                         </div>
+
+                        <p class="text-sm text-gray-400 mb-4">
+                            Visualisasi koordinat GPS seluruh destinasi yang terdaftar
+                            (cluster Denpasar, Badung, Gianyar).
+                        </p>
+
+                        <!-- Map -->
+                        <div id="densityMap" class="w-full h-[420px] rounded-xl border border-gray-200 overflow-hidden">
+                        </div>
+
+                        <!-- Empty State -->
+                        <div id="densityMapEmpty"
+                            class="hidden w-full h-[420px] rounded-xl border border-gray-200 bg-gray-50 flex flex-col items-center justify-center text-center px-4">
+
+                            <i class="fa-solid fa-map-location-dot text-4xl text-gray-300 mb-3"></i>
+
+                            <p class="text-sm text-gray-500">
+                                Belum ada destinasi terdaftar.
+                            </p>
+
+                            <p class="text-xs text-gray-400 mt-1">
+                                Tambahkan data melalui menu di sidebar.
+                            </p>
+
+                        </div>
+
                     </div>
                 </div>
 
@@ -221,12 +267,40 @@
                         </div>
                     </div>
                 </div>
-                <button onclick="logout()">
-                    Logout
-                </button>
             </main>
         </div>
     </div>
+
+    <script>
+        (function () {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            const toggleBtn = document.getElementById('sidebarToggleBtn');
+            const closeBtn = document.getElementById('sidebarCloseBtn');
+
+            function openSidebar() {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+            }
+            function closeSidebar() {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+            }
+
+            toggleBtn?.addEventListener('click', () => {
+                sidebar.classList.contains('-translate-x-full') ? openSidebar() : closeSidebar();
+            });
+            closeBtn?.addEventListener('click', closeSidebar);
+            overlay?.addEventListener('click', closeSidebar);
+
+            // auto-close drawer on mobile after picking a menu item
+            document.querySelectorAll('#sidebar-nav button').forEach((btn) => {
+                btn.addEventListener('click', () => {
+                    if (window.innerWidth < 768) closeSidebar();
+                });
+            });
+        })();
+    </script>
 </body>
 
 </html>
