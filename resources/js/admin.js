@@ -3,18 +3,12 @@ import { getSession } from "./auth";
 const session = getSession();
 
 if (!session || session.role !== "admin") {
-
     window.location.href = "/";
-
 }
 
-
 function logout() {
-
     localStorage.removeItem("balispot_session");
-
     window.location = "/";
-
 }
 
 
@@ -104,28 +98,36 @@ function renderTableData(categoryFilter) {
     });
 }
 
-document.getElementById('destinationForm').addEventListener('submit', function (e) {
-    e.preventDefault();
 
-    const currentMenu = document.getElementById('current-menu-ctx').value;
-    const nameInput = document.getElementById('name').value;
-    const latInput = parseFloat(document.getElementById('lat').value);
-    const lngInput = parseFloat(document.getElementById('lng').value);
-    const priceInput = document.querySelector('input[name="price"]:checked').value;
+const form = document.getElementById("destinationForm");
+if (form) {
 
-    const newPayload = {
-        id: Date.now(),
-        name: nameInput,
-        category: currentMenu,
-        lat: latInput,
-        lng: lngInput,
-        price: priceInput
-    };
+    form.addEventListener("submit", function (e) {
 
-    globalDatabase.push(newPayload);
-    renderTableData(currentMenu);
-    document.getElementById('destinationForm').reset();
-});
+        e.preventDefault();
+
+        const currentMenu = document.getElementById('current-menu-ctx').value;
+        const nameInput = document.getElementById('name').value;
+        const latInput = parseFloat(document.getElementById('lat').value);
+        const lngInput = parseFloat(document.getElementById('lng').value);
+        const priceInput = document.querySelector('input[name="price"]:checked').value;
+
+        const newPayload = {
+            id: Date.now(),
+            name: nameInput,
+            category: currentMenu,
+            lat: latInput,
+            lng: lngInput,
+            price: priceInput
+        };
+
+        globalDatabase.push(newPayload);
+        renderTableData(currentMenu);
+        document.getElementById('destinationForm').reset();
+
+    });
+
+}
 
 function deleteData(id) {
     if (confirm("Apakah Anda yakin ingin menghapus data ini dari Database Produksi?")) {
@@ -136,3 +138,7 @@ function deleteData(id) {
         renderTableData(currentMenu);
     }
 }
+
+window.switchMenu = switchMenu;
+window.deleteData = deleteData;
+window.logout = logout;
