@@ -13,6 +13,11 @@
         .active-menu {
             @apply bg-indigo-800 text-white;
         }
+        .leaflet-container,
+        .leaflet-pane,
+        .leaflet-control-container {
+            z-index: 1 !important;
+        }
     </style>
 </head>
 
@@ -272,7 +277,7 @@
     </div>
 
     <script>
-        (function () {
+        (function() {
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('sidebarOverlay');
             const toggleBtn = document.getElementById('sidebarToggleBtn');
@@ -282,6 +287,7 @@
                 sidebar.classList.remove('-translate-x-full');
                 overlay.classList.remove('hidden');
             }
+
             function closeSidebar() {
                 sidebar.classList.add('-translate-x-full');
                 overlay.classList.add('hidden');
@@ -293,7 +299,6 @@
             closeBtn?.addEventListener('click', closeSidebar);
             overlay?.addEventListener('click', closeSidebar);
 
-            // auto-close drawer on mobile after picking a menu item
             document.querySelectorAll('#sidebar-nav button').forEach((btn) => {
                 btn.addEventListener('click', () => {
                     if (window.innerWidth < 768) closeSidebar();
