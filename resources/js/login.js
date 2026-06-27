@@ -1,9 +1,14 @@
 import { ADMIN, getUsers, saveSession, getSession } from "./auth";
 
 const form = document.getElementById("loginForm");
+const message = document.getElementById("loginMessage");
 
-// Hanya jalankan jika memang berada di halaman login
 if (form) {
+
+    form.reset();
+
+    document.getElementById("username").value = "";
+    document.getElementById("password").value = "";
 
     const session = getSession();
 
@@ -17,6 +22,15 @@ if (form) {
 
         const username = document.getElementById("username").value.trim();
         const password = document.getElementById("password").value.trim();
+
+        message.classList.add("hidden");
+        message.classList.remove(
+            "bg-red-500/20",
+            "border",
+            "border-red-400/40",
+            "text-red-300"
+        );
+        message.textContent = "";
 
         if (username === ADMIN.username && password === ADMIN.password) {
 
@@ -46,9 +60,20 @@ if (form) {
 
         } else {
 
-            alert("Username atau password salah!");
+            message.textContent = "Username atau password salah.";
+
+            message.classList.remove("hidden");
+
+            message.classList.add(
+                "bg-red-500/20",
+                "border",
+                "border-red-400/40",
+                "text-red-300"
+            );
 
         }
 
     });
+
 }
+

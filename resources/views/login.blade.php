@@ -15,7 +15,6 @@
 
     <div class="min-h-screen flex">
 
-        <!-- Left -->
         <div class="hidden lg:flex w-1/2 items-center justify-center p-16">
 
             <div class="text-white">
@@ -37,7 +36,6 @@
 
         </div>
 
-        <!-- Right -->
 
         <div class="flex-1 flex items-center justify-center p-8">
 
@@ -65,7 +63,7 @@
 
                 </div>
 
-                <form id="loginForm" class="space-y-5">
+                <form id="loginForm" class="space-y-5" autocomplete="off">
 
                     <div>
 
@@ -75,7 +73,8 @@
 
                         </label>
 
-                        <input id="username" type="text"
+                        <input id="username" type="text" autocomplete="off"
+
                             class="mt-2 w-full rounded-xl bg-white/20 border border-white/20 p-3 text-white placeholder-white/50 focus:outline-none"
                             placeholder="Enter username">
 
@@ -89,7 +88,8 @@
 
                         </label>
 
-                        <input id="password" type="password"
+                        <input id="password" type="password" autocomplete="new-password"
+
                             class="mt-2 w-full rounded-xl bg-white/20 border border-white/20 p-3 text-white placeholder-white/50 focus:outline-none"
                             placeholder="Enter password">
 
@@ -101,6 +101,8 @@
                         Login
 
                     </button>
+
+                    <p id="loginMessage" class="hidden mt-3 rounded-lg p-3 text-sm text-center"> </p>
 
                 </form>
 

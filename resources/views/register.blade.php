@@ -15,7 +15,6 @@
 
     <div class="min-h-screen flex">
 
-        <!-- Left -->
         <div class="hidden lg:flex w-1/2 items-center justify-center p-16">
 
             <div class="text-white">
@@ -36,8 +35,6 @@
             </div>
 
         </div>
-
-        <!-- Right -->
 
         <div class="flex-1 flex items-center justify-center p-8">
 
