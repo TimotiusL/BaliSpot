@@ -1,4 +1,5 @@
 import { getSession } from "./auth";
+import { getDestinations } from "./storage";
 
 const session = getSession();
 
@@ -6,16 +7,7 @@ if (!session || session.role !== "user") {
     window.location.href = "/";
 }
 
-const baliSpotData = [
-    { id: 1, name: "Pura Uluwatu", category: "Wisata", lat: -8.8291, lng: 115.0849, price: "Murah", desc: "Pertunjukan Tari Kecak di atas tebing laut." },
-    { id: 2, name: "Beach Club Atlas Canggu", category: "Wisata", lat: -8.6592, lng: 115.1301, price: "Mahal", desc: "Beach club terbesar di dunia dengan kolam mewah." },
-    { id: 3, name: "Warung Nasi Ayam Ibu Mangku", category: "Kuliner", lat: -8.4921, lng: 115.2512, price: "Murah", desc: "Kuliner ayam suwir khas Ubud legendaris." },
-    { id: 4, name: "Locavore Restaurant Ubud", category: "Kuliner", lat: -8.5067, lng: 115.2624, price: "Mahal", desc: "Fine dining mewah berbahan organik lokal Bali." },
-    { id: 5, name: "Ayana Resort & Spa Bali", category: "Hotel", lat: -8.7662, lng: 115.1489, price: "Mahal", desc: "Resort mewah tebing dengan pemandangan Rock Bar." },
-    { id: 6, name: "Indah Homestay Kuta", category: "Hotel", lat: -8.7224, lng: 115.1714, price: "Murah", desc: "Penginapan bersih, cocok untuk para backpacker." },
-    { id: 7, name: "Masjid Agung As-Su'ada Denpasar", category: "Ibadah", lat: -8.6573, lng: 115.2124, price: "Murah", desc: "Masjid ramah musafir di pusat kota Denpasar." },
-    { id: 8, name: "Pura Besakih Grand Temple", category: "Ibadah", lat: -8.3739, lng: 115.4517, price: "Murah", desc: "Ibunya seluruh pura Hindu di lereng Gunung Agung." }
-];
+const baliSpotData = getDestinations();
 
 let userLatitude = -8.7172; 
 let userLongitude = 115.1686;

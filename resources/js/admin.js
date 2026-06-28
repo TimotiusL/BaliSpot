@@ -1,4 +1,5 @@
 import { getSession } from "./auth";
+import { getDestinations, saveDestinations } from "./storage";
 
 const session = getSession();
 
@@ -11,74 +12,8 @@ function logout() {
     window.location = "/";
 }
 
-let globalDatabase = [
-    {
-        id: 1,
-        name: "Pura Uluwatu",
-        category: "Wisata",
-        lat: -8.8291,
-        lng: 115.0849,
-        price: "Murah",
-    },
-    {
-        id: 2,
-        name: "Beach Club Atlas Canggu",
-        category: "Wisata",
-        lat: -8.6592,
-        lng: 115.1301,
-        price: "Mahal",
-    },
-    {
-        id: 3,
-        name: "Warung Nasi Ayam Kedewatan Ibu Mangku",
-        category: "Kuliner",
-        lat: -8.4921,
-        lng: 115.2512,
-        price: "Murah",
-    },
-    {
-        id: 4,
-        name: "Locavore Restaurant Ubud",
-        category: "Kuliner",
-        lat: -8.5067,
-        lng: 115.2624,
-        price: "Mahal",
-    },
-    {
-        id: 5,
-        name: "Ayana Resort & Spa Bali",
-        category: "Hotel",
-        lat: -8.7662,
-        lng: 115.1489,
-        price: "Mahal",
-    },
-    {
-        id: 6,
-        name: "Indah Homestay Kuta",
-        category: "Hotel",
-        lat: -8.7224,
-        lng: 115.1714,
-        price: "Murah",
-    },
-    {
-        id: 7,
-        name: "Masjid Agung As-Su'ada Denpasar",
-        category: "Ibadah",
-        lat: -8.6573,
-        lng: 115.2124,
-        price: "Murah",
-    },
-    {
-        id: 8,
-        name: "Pura Besakih Grand Temple",
-        category: "Ibadah",
-        lat: -8.3739,
-        lng: 115.4517,
-        price: "Murah",
-    },
-];
+let globalDatabase = getDestinations();
 
-// ====== Peta Kepadatan Destinasi (Leaflet) ======
 const CATEGORY_STYLE = {
     Wisata: { color: "#2563eb", icon: "fa-compass" },
     Kuliner: { color: "#d97706", icon: "fa-utensils" },
@@ -116,25 +51,29 @@ function renderDensityMap() {
     markersLayer.clearLayers();
 
     globalDatabase.forEach((item) => {
+
+        if (isNaN(item.lat) || isNaN(item.lng)) return;
+
         const style = CATEGORY_STYLE[item.category] || {
             color: "#475569",
             icon: "fa-location-dot",
         };
+
         const icon = L.divIcon({
-            html: `<div style="background:${style.color}" class="w-8 h-8 rounded-full flex items-center justify-center shadow-md border-2 border-white"><i class="fa-solid ${style.icon} text-white text-xs"></i></div>`,
+            html: `<div style="background:${style.color}" class="w-8 h-8 rounded-full flex items-center justify-center shadow-md border-2 border-white">
+                <i class="fa-solid ${style.icon} text-white text-xs"></i>
+               </div>`,
             iconSize: [32, 32],
             iconAnchor: [16, 16],
         });
+
         L.marker([item.lat, item.lng], { icon })
-            .bindPopup(
-                `<b>${item.name}</b><br>${item.category} &middot; ${item.price}`,
-            )
+            .bindPopup(`<b>${item.name}</b><br>${item.category} · ${item.price}`)
             .addTo(markersLayer);
     });
 
     setTimeout(() => densityMap.invalidateSize(), 100);
 }
-// ====== End Peta Kepadatan Destinasi ======
 
 window.onload = function () {
     updateDashboardStats();
@@ -252,8 +191,13 @@ if (form) {
         };
 
         globalDatabase.push(newPayload);
+
+        saveDestinations(globalDatabase);
+
+        updateDashboardStats();
         renderTableData(currentMenu);
         renderDensityMap();
+
         document.getElementById("destinationForm").reset();
     });
 }
@@ -266,8 +210,11 @@ function deleteData(id) {
     ) {
         const currentMenu = document.getElementById("current-menu-ctx").value;
 
-        globalDatabase = globalDatabase.filter((item) => item.id !== id);
+        globalDatabase = globalDatabase.filter(item => item.id !== id);
 
+        saveDestinations(globalDatabase);
+
+        updateDashboardStats();
         renderTableData(currentMenu);
         renderDensityMap();
     }

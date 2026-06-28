@@ -1,0 +1,68 @@
+const defaultDestinations = [
+    {
+        id: 1,
+        name: "Pura Uluwatu",
+        category: "Wisata",
+        lat: -8.8291,
+        lng: 115.0849,
+        price: "Murah",
+    },
+    {
+        id: 2,
+        name: "Beach Club Atlas Canggu",
+        category: "Wisata",
+        lat: -8.6592,
+        lng: 115.1301,
+        price: "Mahal",
+    },
+    {
+        id: 3,
+        name: "Warung Nasi Ayam Kedewatan Ibu Mangku",
+        category: "Kuliner",
+        lat: -8.4921,
+        lng: 115.2512,
+        price: "Murah",
+    },
+    {
+        id: 4,
+        name: "Locavore Restaurant Ubud",
+        category: "Kuliner",
+        lat: -8.5067,
+        lng: 115.2624,
+        price: "Mahal",
+    },
+    {
+        id: 5,
+        name: "Ayana Resort & Spa Bali",
+        category: "Hotel",
+        lat: -8.7662,
+        lng: 115.1489,
+        price: "Mahal",
+    },
+    {
+        id: 6,
+        name: "Indah Homestay Kuta",
+        category: "Hotel",
+        lat: -8.7224,
+        lng: 115.1714,
+        price: "Murah",
+    },
+    {
+        id: 7,
+        name: "Masjid Agung As-Su'ada Denpasar",
+        category: "Ibadah",
+        lat: -8.6573,
+        lng: 115.2124,
+        price: "Murah",
+    },
+    {
+        id: 8,
+        name: "Pura Besakih Grand Temple",
+        category: "Ibadah",
+        lat: -8.3739,
+        lng: 115.4517,
+        price: "Murah",
+    },
+];
+
+export default defaultDestinations;
