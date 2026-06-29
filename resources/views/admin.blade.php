@@ -92,7 +92,7 @@
                         class="w-full flex items-center space-x-3 hover:bg-indigo-900 p-3 rounded-xl font-medium transition text-indigo-200 hover:text-white text-left">
                         <span class="w-7 h-7 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0">
                             <i class="fa-solid fa-utensils text-amber-400 text-xs"></i>
-                        </span><span>Restoran & Cafe</span>
+                        </span><span>Tempat Makan</span>
                     </button>
                     <button onclick="switchMenu('Hotel')" id="btn-Hotel"
                         class="w-full flex items-center space-x-3 hover:bg-indigo-900 p-3 rounded-xl font-medium transition text-indigo-200 hover:text-white text-left">

@@ -9,13 +9,13 @@ if (!session || session.role !== "user") {
 
 const baliSpotData = getDestinations();
 
-let userLatitude = -8.7172; 
+let userLatitude = -8.7172;
 let userLongitude = 115.1686;
-let activeCategory = 'Wisata';
-let activeBudgetFilter = null;
+let activeCategory = "Wisata";
+let activeBudgetFilters = []; // multi-select: array of active budgets
 
 window.onload = function () {
-    getGPSLocation(); 
+    getGPSLocation();
 };
 
 function getGPSLocation() {
@@ -25,17 +25,19 @@ function getGPSLocation() {
                 userLatitude = position.coords.latitude;
                 userLongitude = position.coords.longitude;
 
-                document.getElementById('gps-status').innerHTML =
+                document.getElementById("gps-status").innerHTML =
                     `<span class="text-emerald-400 font-bold">Terdeteksi Akurat:</span> ${userLatitude.toFixed(4)}, ${userLongitude.toFixed(4)}`;
 
                 processAndDisplayDestinations();
             },
             (error) => {
-                console.warn("GPS ditolak/gagal. Menggunakan mode simulasi lokasi (Kuta Bali).");
-                document.getElementById('gps-status').innerHTML =
+                console.warn(
+                    "GPS ditolak/gagal. Menggunakan mode simulasi lokasi (Kuta Bali).",
+                );
+                document.getElementById("gps-status").innerHTML =
                     `<span class="text-yellow-400 font-bold">Simulasi Lokasi (Kuta):</span> ${userLatitude}, ${userLongitude}`;
                 processAndDisplayDestinations();
-            }
+            },
         );
     } else {
         alert("Browser HP Anda tidak mendukung sensor GPS Geolocation.");
@@ -43,33 +45,47 @@ function getGPSLocation() {
 }
 
 function calculateHaversineDistance(lat1, lon1, lat2, lon2) {
-    const R = 6371; 
-    const dLat = (lat2 - lat1) * Math.PI / 180;
-    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const R = 6371;
+    const dLat = ((lat2 - lat1) * Math.PI) / 180;
+    const dLon = ((lon2 - lon1) * Math.PI) / 180;
     const a =
         Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        Math.cos((lat1 * Math.PI) / 180) *
+            Math.cos((lat2 * Math.PI) / 180) *
+            Math.sin(dLon / 2) *
+            Math.sin(dLon / 2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return R * c; 
+    return R * c;
 }
 
 function processAndDisplayDestinations() {
-    const container = document.getElementById('places-container');
-    container.innerHTML = ""; 
+    const container = document.getElementById("places-container");
+    container.innerHTML = "";
 
-    let processedList = baliSpotData.map(place => {
-        let distance = calculateHaversineDistance(userLatitude, userLongitude, place.lat, place.lng);
+    let processedList = baliSpotData.map((place) => {
+        let distance = calculateHaversineDistance(
+            userLatitude,
+            userLongitude,
+            place.lat,
+            place.lng,
+        );
         return { ...place, distance: distance };
     });
 
-    processedList = processedList.filter(place => place.category === activeCategory);
-    if (activeBudgetFilter) {
-        processedList = processedList.filter(place => place.price === activeBudgetFilter);
+    processedList = processedList.filter(
+        (place) => place.category === activeCategory,
+    );
+
+    if (activeBudgetFilters.length > 0) {
+        processedList = processedList.filter((place) =>
+            activeBudgetFilters.includes(place.price),
+        );
     }
 
     processedList.sort((a, b) => a.distance - b.distance);
 
-    document.getElementById('total-found').innerText = `${processedList.length} ditemukan`;
+    document.getElementById("total-found").innerText =
+        `${processedList.length} ditemukan`;
 
     if (processedList.length === 0) {
         container.innerHTML = `
@@ -80,12 +96,23 @@ function processAndDisplayDestinations() {
         return;
     }
 
-    processedList.forEach(place => {
-        let badgeColor = place.price === 'Murah' ? 'bg-green-50 text-green-700' : place.price === 'Cukup' ? 'bg-yellow-50 text-yellow-700' : 'bg-red-50 text-red-700';
-        let currencySymbol = place.price === 'Murah' ? '$' : place.price === 'Cukup' ? '$$' : '$$$';
+    processedList.forEach((place) => {
+        let badgeColor =
+            place.price === "Murah"
+                ? "bg-green-50 text-green-700"
+                : place.price === "Cukup"
+                  ? "bg-yellow-50 text-yellow-700"
+                  : "bg-red-50 text-red-700";
+        let currencySymbol =
+            place.price === "Murah"
+                ? "$"
+                : place.price === "Cukup"
+                  ? "$$"
+                  : "$$$";
 
-        const card = document.createElement('div');
-        card.className = "bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-start justify-between space-x-3 hover:border-indigo-200 transition";
+        const card = document.createElement("div");
+        card.className =
+            "bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-start justify-between space-x-3 hover:border-indigo-200 transition";
         card.innerHTML = `
                     <div class="flex-1">
                         <div class="flex items-center space-x-2 mb-1">
@@ -106,30 +133,52 @@ function processAndDisplayDestinations() {
 
 function switchCategory(category) {
     activeCategory = category;
-    document.querySelectorAll('.nav-item').forEach(btn => {
-        btn.className = "nav-item flex flex-col items-center space-y-1 text-gray-400 hover:text-indigo-600";
-        btn.querySelector('span').className = "text-[10px] font-medium";
+    document.querySelectorAll(".nav-item").forEach((btn) => {
+        btn.className =
+            "nav-item flex flex-col items-center space-y-1 text-gray-400 hover:text-indigo-600";
+        btn.querySelector("span").className = "text-[10px] font-medium";
     });
     const activeNav = document.getElementById(`nav-${category}`);
-    activeNav.className = "nav-item flex flex-col items-center space-y-1 text-indigo-600";
-    activeNav.querySelector('span').className = "text-[10px] font-bold";
+    activeNav.className =
+        "nav-item flex flex-col items-center space-y-1 text-indigo-600";
+    activeNav.querySelector("span").className = "text-[10px] font-bold";
 
-    document.getElementById('list-title').innerHTML = `<i class="fa-solid fa-wand-magic-sparkles text-indigo-500 mr-2"></i>${category} Terdekat Anda`;
+    document.getElementById("list-title").innerHTML =
+        `<i class="fa-solid fa-wand-magic-sparkles text-indigo-500 mr-2"></i>${category} Terdekat Anda`;
     processAndDisplayDestinations();
 }
 
-function setBudgetFilter(budget) {
-    if (activeBudgetFilter === budget) {
-        activeBudgetFilter = null; 
-        document.getElementById(`btn-b-${budget}`).className = "border border-gray-200 bg-white py-2 rounded-xl text-sm font-semibold text-gray-600 shadow-sm transition";
+function getBudgetActiveStyle(budget) {
+    return budget === "Murah"
+        ? "bg-green-600 text-white border-green-600"
+        : budget === "Cukup"
+          ? "bg-yellow-500 text-white border-yellow-500"
+          : "bg-red-600 text-white border-red-600";
+}
+
+function renderBudgetButtonStyle(budget) {
+    const btn = document.getElementById(`btn-b-${budget}`);
+    if (!btn) return;
+
+    if (activeBudgetFilters.includes(budget)) {
+        btn.className = `filter-budget-btn ${getBudgetActiveStyle(budget)} py-2 rounded-xl text-sm font-bold shadow-md transition`;
     } else {
-        document.querySelectorAll('.filter-budget-btn').forEach(btn => {
-            btn.className = "filter-budget-btn border border-gray-200 bg-white py-2 rounded-xl text-sm font-semibold text-gray-600 shadow-sm transition";
-        });
-        activeBudgetFilter = budget;
-        let activeStyle = budget === 'Murah' ? 'bg-green-600 text-white border-green-600' : budget === 'Cukup' ? 'bg-yellow-500 text-white border-yellow-500' : 'bg-red-600 text-white border-red-600';
-        document.getElementById(`btn-b-${budget}`).className = `${activeStyle} py-2 rounded-xl text-sm font-bold shadow-md transition`;
+        btn.className =
+            "filter-budget-btn border border-gray-200 bg-white py-2 rounded-xl text-sm font-semibold text-gray-600 shadow-sm transition";
     }
+}
+
+function setBudgetFilter(budget) {
+    const idx = activeBudgetFilters.indexOf(budget);
+    if (idx > -1) {
+        // sudah aktif -> matikan
+        activeBudgetFilters.splice(idx, 1);
+    } else {
+        // belum aktif -> tambahkan (tetap simpan budget lain yang sudah aktif)
+        activeBudgetFilters.push(budget);
+    }
+
+    renderBudgetButtonStyle(budget);
     processAndDisplayDestinations();
 }
 
